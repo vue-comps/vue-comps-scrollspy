@@ -1,6 +1,6 @@
 # vue-comps-scrollspy
 
-Tracks, which elements are currently in the viewport
+Tracks, which element is currently in the viewport
 
 ### [Demo](https://vue-comps.github.io/vue-comps-scrollspy)
 
