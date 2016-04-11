@@ -33,11 +33,13 @@ For examples see [`dev/`](dev/).
 
 #### Props
 Scrollspy
+
 | Name | type | default | description |
 | ---:| --- | ---| --- |
 | classes | String | ["table-of-contents"] | the css classes of the ul |
 
 Scrollspy-item
+
 | Name | type | default | description |
 | ---:| --- | ---| --- |
 | target | String | - | (required) id of the element which should be watched |
