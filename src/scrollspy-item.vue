@@ -1,53 +1,55 @@
 // out: ..
-<template lang="jade">
+<template lang="pug">
 li
   a(
-    v-bind:class="{active:active}"
-    v-bind:style="{cursor:'pointer'}"
-    @click="scrollTo | notPrevented | prevent"
+    :class="cClass",
+    :style="cStyle",
+    @click="scroll"
     )
     slot
 </template>
 
 <script lang="coffee">
 module.exports =
-
-  filters:
-    notPrevented: require("vue-filters/notPrevented")
-    prevent: require("vue-filters/prevent")
-
   props:
-    "target":
-      type: String
-      required: true
+    target: null
 
-  watch:
-    "target": "addTarget"
+  computed:
+    targetEl: ->
+      if @ready and typeof @target == 'string' or @target instanceof String
+        return document.getElementById(@target)
+      return @target
+    cClass: ->
+      if @active and @targetEl
+        return [@$parent.activeClass]
+      return null
+    cStyle: ->
+      style = []
+      if @targetEl
+        style.push cursor:'pointer'
+        if @active
+          style.push @$parent.activeStyle
+      return style
 
   data: ->
+    isScrollspyItem: true
     active: false
-    targetEl: null
-
-  events:
-    activate: (name) ->
-      @active = name == @target
-      true
+    ready: false
 
   methods:
-    addTarget: (newTarget=@target,oldTarget) ->
-      @removeTarget(oldTarget) if oldTarget?
-      @targetEl = document.getElementById(newTarget)
+    scroll: (e) ->
+      if e?
+        return if e.defaultPrevented
+        e.preventDefault()
       if @targetEl?
-        @$dispatch "addTarget", newTarget, @targetEl
-    removeTarget: (target=@target) ->
-      @$dispatch "removeTarget", target
-    scrollTo: ->
-      @$dispatch "activate",@target
-      @targetEl?.scrollIntoView()
+        @$parent.pause = true
+        @$parent.transition @targetEl.getBoundingClientRect().top, =>
+          @$parent.pause = false
+          @$parent.activate(@)
 
-  attached: ->
-    @addTarget()
-
-  dettached: ->
-    @removeTarget()
+    activate: ->
+      @active = true
+    deactivate: ->
+      @active = false
+  ready: -> @ready = true
 </script>
